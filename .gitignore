@@ -1,0 +1,9 @@
+node_modules
+
+/target
+^target/
+target
+
+*.wasm
+
+.swc

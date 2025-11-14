@@ -1,0 +1,24 @@
+[package]
+name = "swc_plugin_import_meta_hot"
+version = "1.15.1"
+edition = "2021"
+authors = ["Øyvind Marthinsen"]
+description = "SWC plugin for handling the transformation of import.meta.hot"
+license = "Apache-2.0"
+rust-version = "1.70"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+swc_core = { version = "47.0.5", features = [
+    "ecma_plugin_transform",
+    "trace_macro",
+] }
+tracing = { version = "0.1.41", features = ["release_max_level_info"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = "symbols"
