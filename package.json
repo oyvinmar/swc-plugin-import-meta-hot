@@ -1,6 +1,6 @@
 {
   "name": "swc-plugin-import-meta-hot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "@swc plugin for handling the transformation of import.meta.hot",
   "author": "Øyvind Marthinsen",
   "homepage": "https://github.com/oyvinmar/swc-plugin-import-meta-hot#readme",
