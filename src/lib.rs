@@ -3,7 +3,7 @@ use swc_core::{
     ecma::{
         ast::{Expr, Ident, MemberExpr, MetaPropKind, Program},
         transforms::testing::test,
-        visit::{standard_only_visit_mut, visit_mut_pass, VisitMut, VisitMutWith},
+        visit::{visit_mut_pass, VisitMut, VisitMutWith},
     },
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
     trace_macro::swc_trace,
@@ -13,8 +13,6 @@ pub struct TransformVisitor;
 
 #[swc_trace]
 impl VisitMut for TransformVisitor {
-    standard_only_visit_mut!();
-
     fn visit_mut_expr(&mut self, n: &mut Expr) {
         n.visit_mut_children_with(self);
 

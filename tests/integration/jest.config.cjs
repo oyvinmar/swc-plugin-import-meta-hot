@@ -1,6 +1,6 @@
 module.exports = {
   transform: {
-    "^.+\\.[jt]s$": [
+    "\\.([jt]sx?)$": [
       "@swc/jest",
       {
         jsc: {
@@ -17,6 +17,6 @@ module.exports = {
     ],
   },
   testRegex: "(\\.|/)(test)\\.([jt]s)$",
-  moduleFileExtensions: ["js", "ts"],
+  moduleFileExtensions: ["js", "ts", "jsx", "tsx"],
   moduleDirectories: ["src", "node_modules"],
 };

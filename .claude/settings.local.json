@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cargo test:*)"
+      "Bash(cargo test:*)",
+      "Bash(cargo build:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm:*)",
+      "Bash(pnpm test:integration:*)",
+      "Bash(cargo build-wasip1:*)"
     ],
     "deny": [],
     "ask": []
