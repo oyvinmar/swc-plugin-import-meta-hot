@@ -19,6 +19,8 @@ impl VisitMut for TransformVisitor {
         if let Expr::Member(member) = n {
             if is_visiting_import_meta_hot(member) {
                 member.obj = Box::new(Ident::new_no_ctxt("module".into(), DUMMY_SP).into());
+            } else if is_visiting_import_meta_env(member) {
+                member.obj = Box::new(Ident::new_no_ctxt("process".into(), DUMMY_SP).into());
             }
         }
     }
@@ -33,6 +35,17 @@ fn is_visiting_import_meta_hot(n: &MemberExpr) -> bool {
     };
 
     obj.kind == MetaPropKind::ImportMeta && prop.sym == "hot"
+}
+
+fn is_visiting_import_meta_env(n: &MemberExpr) -> bool {
+    let Some(obj) = n.obj.as_meta_prop() else {
+        return false;
+    };
+    let Some(prop) = n.prop.as_ident() else {
+        return false;
+    };
+
+    obj.kind == MetaPropKind::ImportMeta && prop.sym == "env"
 }
 
 #[plugin_transform]
@@ -71,6 +84,13 @@ test!(
 test!(
     Default::default(),
     |_| visit_mut_pass(TransformVisitor),
-    no_transform_import_meta_env,
+    transform_import_meta_env,
     r#"import.meta.env"#
+);
+
+test!(
+    Default::default(),
+    |_| visit_mut_pass(TransformVisitor),
+    transform_import_meta_env_access,
+    r#"import.meta.env.NODE_ENV"#
 );
