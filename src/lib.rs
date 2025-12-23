@@ -1,7 +1,7 @@
 use swc_core::{
     common::DUMMY_SP,
     ecma::{
-        ast::{Expr, Ident, MemberExpr, MetaPropKind, Program},
+        ast::{Expr, Ident, IdentName, MemberExpr, MetaPropKind, Program},
         transforms::testing::test,
         visit::{visit_mut_pass, VisitMut, VisitMutWith},
     },
@@ -19,6 +19,9 @@ impl VisitMut for TransformVisitor {
         if let Expr::Member(member) = n {
             if is_visiting_import_meta_hot(member) {
                 member.obj = Box::new(Ident::new_no_ctxt("module".into(), DUMMY_SP).into());
+            } else if is_visiting_import_meta_webpack_hot(member) {
+                member.obj = Box::new(Ident::new_no_ctxt("module".into(), DUMMY_SP).into());
+                member.prop = IdentName::new("hot".into(), DUMMY_SP).into();
             } else if is_visiting_import_meta_env(member) {
                 member.obj = Box::new(Ident::new_no_ctxt("process".into(), DUMMY_SP).into());
             }
@@ -46,6 +49,17 @@ fn is_visiting_import_meta_env(n: &MemberExpr) -> bool {
     };
 
     obj.kind == MetaPropKind::ImportMeta && prop.sym == "env"
+}
+
+fn is_visiting_import_meta_webpack_hot(n: &MemberExpr) -> bool {
+    let Some(obj) = n.obj.as_meta_prop() else {
+        return false;
+    };
+    let Some(prop) = n.prop.as_ident() else {
+        return false;
+    };
+
+    obj.kind == MetaPropKind::ImportMeta && prop.sym == "webpackHot"
 }
 
 #[plugin_transform]
@@ -93,4 +107,18 @@ test!(
     |_| visit_mut_pass(TransformVisitor),
     transform_import_meta_env_access,
     r#"import.meta.env.NODE_ENV"#
+);
+
+test!(
+    Default::default(),
+    |_| visit_mut_pass(TransformVisitor),
+    transform_import_meta_webpack_hot,
+    r#"import.meta.webpackHot"#
+);
+
+test!(
+    Default::default(),
+    |_| visit_mut_pass(TransformVisitor),
+    transform_import_meta_webpack_hot_accept,
+    r#"import.meta.webpackHot.accept()"#
 );
